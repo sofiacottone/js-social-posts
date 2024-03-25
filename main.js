@@ -68,6 +68,7 @@ const posts = [
     }
 ];
 
+//MILESTONE 1
 // stampo i post
 const postContainer = document.querySelector('#container');
 posts.forEach((singlePost) => {
@@ -75,6 +76,34 @@ posts.forEach((singlePost) => {
     postContainer.innerHTML += postTemplate;
 });
 
+//MILESTONE 2
+// seleziono l'elemento del DOM
+const allLikeBtn = document.querySelectorAll('.js-like-button');
+const allLikeCounters = document.querySelectorAll('.js-likes-counter');
+
+const likedPosts = [];
+
+allLikeBtn.forEach((likeButton, index) => {
+    likeButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        // cambio il colore del testo del bottone
+        //  aggiungendo la classe 'like-button--liked'
+        this.classList.add('like-button--liked');
+
+
+        // seleziono l'id
+        const postId = this.dataset.postid;
+        // pusho l'id dei like
+        posts.push(postId);
+
+        // seleziono il counter dei like e incremento al click
+        const relatedCounter = document.querySelector(`#like-counter-${postId}`);
+        console.log(postId);
+        console.log(relatedCounter);
+        relatedCounter.innerHTML = parseInt(relatedCounter.innerHTML) + 1;
+    });
+
+});
 
 // #region FUNCTIONS
 
@@ -91,7 +120,7 @@ function generateSinglePostTemplate(postObject) {
         <div class="post__header">
             <div class="post-meta">
                 <div class="post-meta__icon">
-                    <img class="profile-pic" src="${author.image}" alt="${author.name}">
+                    ${getImageTemplate(author)}
                 </div>
                 <div class="post-meta__data">
                     <div class="post-meta__author">${author.name}</div>
@@ -121,4 +150,19 @@ function generateSinglePostTemplate(postObject) {
     return postTemplate;
 };
 
+// 2
+// restituisce un'immagine del profilo se presente, altrimenti stampa le iniziali
+// author -> oggeto da cui andare a recuperare le informazioni
+// return -> stringa che va inserita nel DOM
+function getImageTemplate(author) {
+    let imageString;
+
+    if (author.image) {
+        imageString = `<img class="profile-pic" src="${author.image}" alt="${author.name}">`;
+    } else {
+        imageString = `<span class="profile-pic-default"></span>`;
+    }
+
+    return imageString;
+};
 // #endregion
