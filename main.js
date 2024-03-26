@@ -86,21 +86,30 @@ const likedPosts = [];
 allLikeBtn.forEach((likeButton, index) => {
     likeButton.addEventListener('click', function (event) {
         event.preventDefault();
-        // cambio il colore del testo del bottone
-        //  aggiungendo la classe 'like-button--liked'
-        this.classList.add('like-button--liked');
 
+        const relatedCounter = allLikeCounters[index];
+        const relatedCounterNumber = parseInt(relatedCounter.innerHTML);
 
-        // seleziono l'id
-        const postId = this.dataset.postid;
-        // pusho l'id dei like
-        posts.push(postId);
+        if (!this.classList.contains('like-button--liked')) {
 
-        // seleziono il counter dei like e incremento al click
-        const relatedCounter = document.querySelector(`#like-counter-${postId}`);
-        console.log(postId);
-        console.log(relatedCounter);
-        relatedCounter.innerHTML = parseInt(relatedCounter.innerHTML) + 1;
+            // cambio il colore del testo del bottone
+            //  aggiungendo la classe 'like-button--liked'
+            this.classList.add('like-button--liked');
+
+            // seleziono il counter dei like e incremento al click
+            relatedCounter.innerHTML = relatedCounterNumber + 1;
+
+            // seleziono l'id
+            const postId = parseInt(this.dataset.postid);
+            // pusho l'id dei like
+            likedPosts.push(postId);
+
+        } else {
+            this.classList.remove('like-button--liked');
+            // seleziono il counter dei like e decremento al click
+            relatedCounter.innerHTML = relatedCounterNumber - 1;
+
+        }
     });
 
 });
@@ -110,10 +119,15 @@ allLikeBtn.forEach((likeButton, index) => {
 // 1
 // funzione per generare i singoli post
 // postObject -> oggetto che contiene le informazioni sul post
-// return -> elemento del DOM contenente il template del post da stampare
+// return -> stringa che va inserita nel DOM contenente il template del post da stampare
 function generateSinglePostTemplate(postObject) {
 
     const { id, content, media, author, likes, created } = postObject;
+
+    // bonus 1
+    const createdArray = created.split('-');
+    const [year, month, day] = createdArray;
+    const newDate = `${day}/${month}/${year}`
 
     const postTemplate = `
     <div class="post">
@@ -124,7 +138,7 @@ function generateSinglePostTemplate(postObject) {
                 </div>
                 <div class="post-meta__data">
                     <div class="post-meta__author">${author.name}</div>
-                    <div class="post-meta__time">${created}</div>
+                    <div class="post-meta__time">${newDate}</div>
                 </div>
             </div>
         </div>
@@ -135,7 +149,7 @@ function generateSinglePostTemplate(postObject) {
         <div class="post__footer">
             <div class="likes js-likes">
                 <div class="likes__cta">
-                    <a class="like-button  js-like-button" href="#" data-postid="${id}">
+                    <a class="like-button js-like-button" href="#" data-postid="${id}">
                         <i class="like-button__icon fas fa-thumbs-up" aria-hidden="true"></i>
                         <span class="like-button__label">Mi Piace</span>
                     </a>
@@ -160,7 +174,12 @@ function getImageTemplate(author) {
     if (author.image) {
         imageString = `<img class="profile-pic" src="${author.image}" alt="${author.name}">`;
     } else {
-        imageString = `<span class="profile-pic-default"></span>`;
+        const authorNameArray = author.name.split(' ');
+        const [name, lastname] = authorNameArray;
+        imageString = `
+        <div class="profile-pic-default">
+            <span>${name[0]}${lastname[0]}</span>
+        </div>`;
     }
 
     return imageString;
